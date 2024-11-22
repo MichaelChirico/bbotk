@@ -1,18 +1,18 @@
 test_that("backup batch callback works", {
-  on.exit(unlink("./archive.rds"))
+  archive = withr::local_tempfile()
 
   instance = OptimInstanceBatchSingleCrit$new(
     objective = OBJ_1D,
     search_space = PS_1D,
     terminator = trm("evals", n_evals = 10),
-    callbacks = clbk("bbotk.backup", path = "./archive.rds"),
+    callbacks = clbk("bbotk.backup", path = archive),
   )
 
   optimizer = opt("random_search")
   optimizer$optimize(instance)
 
-  expect_file_exists("./archive.rds")
-  expect_data_table(readRDS("./archive.rds"))
+  expect_file_exists(archive)
+  expect_data_table(readRDS(archive))
 })
 
 test_that("async callback works", {
